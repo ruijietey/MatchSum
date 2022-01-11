@@ -15,11 +15,11 @@ from cytoolz import curry
 from pyrouge.utils import log
 from pyrouge import Rouge155
 
-from transformers import BertTokenizer, RobertaTokenizer
+from transformers import BertTokenizer, RobertaTokenizer, DistilBertTokenizer
 
 MAX_LEN = 512
 
-_ROUGE_PATH = '/path/to/RELEASE-1.5.5'
+_ROUGE_PATH = '/home/students/s121md102_06/apps/pyrouge/rouge/tools/ROUGE-1.5.5'
 temp_path = './temp' # path to store some temporary files
 
 original_data, sent_ids = [], []
@@ -28,7 +28,8 @@ def load_jsonl(data_path):
     data = []
     with open(data_path) as f:
         for line in f:
-            data.append(json.loads(line))
+            if line != "\n":
+                data.append(json.loads(line))
     return data
 
 def get_rouge(path, dec):
@@ -166,6 +167,9 @@ def get_candidates_mp(args):
     if args.tokenizer == 'bert':
         tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
         cls, sep = '[CLS]', '[SEP]'
+    elif args.tokenizer == 'distilbert':
+        tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
+        cls, sep = '[CLS]', '[SEP]'
     else:
         tokenizer = RobertaTokenizer.from_pretrained('roberta-base')
         cls, sep = '<s>', '</s>'
@@ -207,7 +211,7 @@ if __name__ == '__main__':
         description='Process truncated documents to obtain candidate summaries'
     )
     parser.add_argument('--tokenizer', type=str, required=True,
-        help='BERT/RoBERTa')
+        help='BERT/RoBERTa/distilbert')
     parser.add_argument('--data_path', type=str, required=True,
         help='path to the original dataset, the original dataset should contain text and summary')
     parser.add_argument('--index_path', type=str, required=True,
@@ -216,7 +220,7 @@ if __name__ == '__main__':
         help='path to store the processed dataset')
 
     args = parser.parse_args()
-    assert args.tokenizer in ['bert', 'roberta']
+    assert args.tokenizer in ['bert', 'roberta', 'distilbert']
     assert exists(args.data_path)
     assert exists(args.index_path)
 
