@@ -32,6 +32,7 @@ def configure_training(args):
     params['valid_steps']   = args.valid_steps
     return devices, params
 
+
 def train_model(args):
     
     # check if the data_path and save_path exists

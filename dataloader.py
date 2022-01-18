@@ -19,7 +19,7 @@ class MatchSumLoader(JsonLoader):
         self.max_len = max_len
         self.encoder = encoder
 
-        if encoder == 'bert':
+        if encoder == 'bert' or encoder == 'distilbert':
             self.sep_id = [102] # '[SEP]' (BERT)
         else:
             self.sep_id = [2] # '</s>' (RoBERTa)
@@ -63,7 +63,7 @@ class MatchSumLoader(JsonLoader):
             datasets[name].set_input('text_id', 'candidate_id', 'summary_id')
         
             # set padding value
-            if self.encoder == 'bert':
+            if self.encoder == 'bert' or self.encoder == 'distilbert':
                 pad_id = 0
             else:
                 pad_id = 1 # for RoBERTa
